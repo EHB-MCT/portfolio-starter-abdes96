@@ -1,23 +1,27 @@
 // user route
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('../classes/User.js');
-const bcrypt = require('bcryptjs');
+const User = require("../classes/User.js");
+const bcrypt = require("bcryptjs");
 
 const handleErrors = (err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error.' });
+  console.error("Error:", err);
+  res.status(500).json({ error: "Internal server error." });
 };
 
-const validateInputs = (inputs) => {
-  const { name, email, password } = inputs;
-  if (!name || !email || !password) {
-    throw new Error('Name, email, and password are required.');
+const validateInputs = (inputs, requireName = true) => {
+  const { name, email, password } = inputs; 
+  if (requireName && (!name || !email || !password)) {
+    throw new Error("Name, email, and password are required.");
+  }
+
+  if (!requireName && (!email || !password)) {
+    throw new Error("Email and password are required.");
   }
 };
 
-router.use(handleErrors); 
+router.use(handleErrors);
 
 /**
  * @route GET /users
@@ -26,17 +30,16 @@ router.use(handleErrors);
  * @throws {Error} If there is an error in retrieving user names.
  */
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const users = await req.db.select('name').from('users');
-    const usernames = users.map(user => user.name);
-    res.json(usernames);
+    const users = await req.db
+      .select("id", "name", "email", "password")
+      .from("users");
+    res.json(users);
   } catch (error) {
     throw error; // Automatically handled by the error handling middleware
   }
 });
-
-
 
 /**
  * @route POST /users/register
@@ -48,23 +51,79 @@ router.get('/', async (req, res) => {
  * @throws {Error} If there is an error in registering a new user.
  */
 
-router.post('/register', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+router.post("/register", async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+  
+      validateInputs({ name, email, password });
+  
+      const hashedPassword = await bcrypt.hash(password.trim(), 10);
+  
+      const [userId] = await req.db("users")
+        .insert({
+          name: name,
+          email: email,
+          password: hashedPassword,
+        })
+        .returning("id");
 
-    validateInputs({ name, email, password });
+        const [user] = await req.db("users").where("id", userId);
 
-    const newUser = new User({ name, email, password });
+  
+      res.status(201).json({
+        message: "User created successfully",
+        userId: user,
+      });
 
-    await newUser.hashPassword();
+    } catch (error) {
+      if (error.code === "23505" && error.constraint === "users_email_unique") {
+        res.status(400).json({
+          error: "Email is already in use. Please choose a different email.",
+        });
+      } else {
+        throw error;
+      }
+    }
+  });
+  
+  
 
-    const userId = await newUser.save();
+/**
+ * @route POST /users/login
+ * @desc Authenticate a user and set a session cookie.
+ * @params {string} email - The email of the user.
+ * @params {string} password - The password of the user.
+ * @returns {Object} An object containing user details upon successful authentication.
+ * @throws {Error} If there is an error in the authentication process.
+ */
 
-    res.status(201).json({ userId });
-  } catch (error) {
-    throw error; 
-  }
-});
+router.post("/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      validateInputs({ email, password }, false);
+  
+      const user = await req.db("users").where("email", email).first();
+  
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password." });
+      }
+  
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+  
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: "Invalid password." });
+      }
+  
+      res.json({
+        message: "Authentication successful.",
+        user : user
+      });
+    } catch (error) {
+      throw error;
+    }
+  });
+  
 
 /**
  * @route GET /users/:id
@@ -74,30 +133,33 @@ router.post('/register', async (req, res) => {
  * @throws {Error} If there is an error in retrieving user details.
  */
 
-router.get('/:id', async (req, res) => {
-    try {
-      const userId = req.params.id;
-  
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID is required.' });
-      }
-  
-      const user = await req.db('users').where('id', userId).first();
-  
-      if (!user) {
-        return res.status(404).json({ error: 'User not found.' });
-      }
-  
-      const { name, email } = user;
+router.get("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
 
-      const userWithDetails = new User({ id: userId, name, email });
-
-      res.json({ id: userId, name, email });
-    } catch (error) {
-      throw error; 
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
     }
-  });
 
+    const user = await req.db("users").where("id", userId).first();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const { name, email } = user;
+
+    const userWithDetails = new User({ id: userId, name, email });
+
+    res.json({
+      id: userWithDetails.id,
+      name: userWithDetails.name,
+      email: userWithDetails.email,
+    });
+  } catch (error) {
+    throw error;
+  }
+});
 
 /**
  * @route PUT /users/:id
@@ -110,48 +172,56 @@ router.get('/:id', async (req, res) => {
  * @throws {Error} If there is an error in updating user details.
  */
 
-router.put('/:id', async (req, res) => {
-    try {
-      const userId = req.params.id;
-      const { email, password, confirmPassword } = req.body;
-  
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID is required.' });
-      }
-  
-      const user = await req.db('users').where('id', userId).first();
-  
-      if (!user) {
-        return res.status(404).json({ error: 'User not found.' });
-      }
-  
-      if (email) {
-        const emailExists = await req.db('users').where('email', email).andWhereNot('id', userId).first();
-        if (emailExists) {
-          return res.status(400).json({ error: 'Email is already in use by another user.' });
-        }
-  
-        user.email = email;
-      }
-  
-      if (password) {
-        if (password !== confirmPassword) {
-          return res.status(400).json({ error: 'Password and confirmation do not match.' });
-        }
-  
-        user.password = await bcrypt.hash(password, 10);
-      }
-  
-      await req.db('users').where('id', userId).update({
-        email: user.email,
-        password: user.password,
-      });
-  
-      res.json({ message: 'User details updated successfully.' });
-    } catch (error) {
-      throw error; 
+router.put("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { email, password, confirmPassword } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
     }
-  });
+
+    const user = await req.db("users").where("id", userId).first();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    if (email) {
+      const emailExists = await req
+        .db("users")
+        .where("email", email)
+        .andWhereNot("id", userId)
+        .first();
+      if (emailExists) {
+        return res
+          .status(400)
+          .json({ error: "Email is already in use by another user." });
+      }
+
+      user.email = email;
+    }
+
+    if (password) {
+      if (password !== confirmPassword) {
+        return res
+          .status(400)
+          .json({ error: "Password and confirmation do not match." });
+      }
+
+      user.password = await bcrypt.hash(this.password.trim(), 10);
+    }
+
+    await req.db("users").where("id", userId).update({
+      email: user.email,
+      password: user.password,
+    });
+
+    res.json({ message: "User details updated successfully." });
+  } catch (error) {
+    throw error;
+  }
+});
 
 /**
  * @route DELETE /users/:id
@@ -161,25 +231,25 @@ router.put('/:id', async (req, res) => {
  * @throws {Error} If there is an error in deleting the user.
  */
 
-router.delete('/:id', async (req, res) => {
-    try {
-      const userId = req.params.id;
-  
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID is required.' });
-      }
-  
-      const userExists = await req.db('users').where('id', userId).first();
-      if (!userExists) {
-        return res.status(404).json({ error: 'User not found.' });
-      }
-  
-      await req.db('users').where('id', userId).del();
-  
-      res.json({ message: 'User deleted successfully.' });
-    } catch (error) {
-      throw error; 
+router.delete("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
     }
-  });
+
+    const userExists = await req.db("users").where("id", userId).first();
+    if (!userExists) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    await req.db("users").where("id", userId).del();
+
+    res.json({ message: "User deleted successfully." });
+  } catch (error) {
+    throw error;
+  }
+});
 
 module.exports = router;

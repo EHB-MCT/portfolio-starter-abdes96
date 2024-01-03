@@ -1,5 +1,4 @@
-const bcrypt = require('bcryptjs'); 
-
+const bcrypt = require("bcryptjs");
 
 class User {
   constructor({ name, email, password }) {
@@ -8,13 +7,15 @@ class User {
     this.password = password;
   }
 
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
+  
+  
 
-  async validatePassword(candidatePassword) {
+ 
+
+  validatePassword(candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
   }
+  
 }
 
 module.exports = User;
