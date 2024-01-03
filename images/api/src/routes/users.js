@@ -11,7 +11,7 @@ const handleErrors = (err, req, res, next) => {
 };
 
 const validateInputs = (inputs, requireName = true) => {
-  const { name, email, password } = inputs; 
+  const { name, email, password } = inputs;
   if (requireName && (!name || !email || !password)) {
     throw new Error("Name, email, and password are required.");
   }
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
       .from("users");
     res.json(users);
   } catch (error) {
-    throw error; // Automatically handled by the error handling middleware
+    throw error; 
   }
 });
 
@@ -52,41 +52,38 @@ router.get("/", async (req, res) => {
  */
 
 router.post("/register", async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
-  
-      validateInputs({ name, email, password });
-  
-      const hashedPassword = await bcrypt.hash(password.trim(), 10);
-  
-      const [userId] = await req.db("users")
-        .insert({
-          name: name,
-          email: email,
-          password: hashedPassword,
-        })
-        .returning("id");
+  try {
+    const { name, email, password } = req.body;
 
-        const [user] = await req.db("users").where("id", userId);
+    validateInputs({ name, email, password });
 
-  
-      res.status(201).json({
-        message: "User created successfully",
-        userId: user,
+    const hashedPassword = await bcrypt.hash(password.trim(), 10);
+
+    const [userId] = await req
+      .db("users")
+      .insert({
+        name: name,
+        email: email,
+        password: hashedPassword,
+      })
+      .returning("id");
+
+    const [user] = await req.db("users").where("id", userId);
+
+    res.status(201).json({
+      message: "User created successfully",
+      userId: user,
+    });
+  } catch (error) {
+    if (error.code === "23505" && error.constraint === "users_email_unique") {
+      res.status(400).json({
+        error: "Email is already in use. Please choose a different email.",
       });
-
-    } catch (error) {
-      if (error.code === "23505" && error.constraint === "users_email_unique") {
-        res.status(400).json({
-          error: "Email is already in use. Please choose a different email.",
-        });
-      } else {
-        throw error;
-      }
+    } else {
+      throw error;
     }
-  });
-  
-  
+  }
+});
 
 /**
  * @route POST /users/login
@@ -98,32 +95,35 @@ router.post("/register", async (req, res) => {
  */
 
 router.post("/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
-  
-      validateInputs({ email, password }, false);
-  
-      const user = await req.db("users").where("email", email).first();
-  
-      if (!user) {
-        return res.status(401).json({ error: "Invalid email or password." });
-      }
-  
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-  
-      if (!isPasswordValid) {
-        return res.status(401).json({ error: "Invalid password." });
-      }
-  
-      res.json({
-        message: "Authentication successful.",
-        user : user
-      });
-    } catch (error) {
-      throw error;
+  try {
+    const { email, password } = req.body;
+
+    validateInputs({ email, password }, false);
+
+    const user = await req.db("users").where("email", email).first();
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
     }
-  });
-  
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid password." });
+    }
+
+
+    res.json({
+      message: "Authentication successful.",
+      user: user,
+    });
+
+ 
+
+  } catch (error) {
+    throw error;
+  }
+});
 
 /**
  * @route GET /users/:id
@@ -177,6 +177,8 @@ router.put("/:id", async (req, res) => {
     const userId = req.params.id;
     const { email, password, confirmPassword } = req.body;
 
+    validateInputs({ email, password}, false );
+
     if (!userId) {
       return res.status(400).json({ error: "User ID is required." });
     }
@@ -209,7 +211,7 @@ router.put("/:id", async (req, res) => {
           .json({ error: "Password and confirmation do not match." });
       }
 
-      user.password = await bcrypt.hash(this.password.trim(), 10);
+      user.password = await bcrypt.hash(password.trim(), 10);
     }
 
     await req.db("users").where("id", userId).update({

@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors"); 
+const cors = require("cors");
 const usersRouter = require("./routes/users.js");
 const artworksRouter = require("./routes/artworks.js");
 require("dotenv").config({ path: "./../.env" });
@@ -12,6 +12,8 @@ const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+
 
 app.use((req, res, next) => {
   req.db = knex;
