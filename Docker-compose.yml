@@ -13,14 +13,6 @@ services:
     environment: 
       PG_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@store:5432/${POSTGRES_DB}"
 
-  
-  store:
-    environment:
-      POSTGRES_USER: 
-      POSTGRES_PASSWORD: 
-      POSTGRES_DB: 
-      PG_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
-
   store:
     container_name: postgres
     image: postgres:latest
@@ -31,7 +23,5 @@ services:
       POSTGRES_PASSWORD: 
       POSTGRES_DB: 
       POSTGRES_HOSTY_AUTH_METHOD: "trust"
-      POSTGRES_DB: 
-      POSTGRES_PASSWORD: 
     volumes:
       - ./_backup:/var/lib/postgresql/data
