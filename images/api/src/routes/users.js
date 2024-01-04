@@ -5,10 +5,20 @@ const router = express.Router();
 const User = require("../classes/User.js");
 const bcrypt = require("bcryptjs");
 
+/**
+ * Error handling middleware.
+ * @param {Error} err - The error object.
+ * @param {express.Request} req - The request object.
+ * @param {express.Response} res - The response object.
+ * @param {function} next - The next middleware function.
+ */
+
 const handleErrors = (err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({ error: "Internal server error." });
 };
+
+router.use(handleErrors);
 
 const validateInputs = (inputs, requireName = true) => {
   const { name, email, password } = inputs;
@@ -21,25 +31,24 @@ const validateInputs = (inputs, requireName = true) => {
   }
 };
 
-router.use(handleErrors);
-
 /**
+ * Retrieve all users from the database.
+ *
  * @route GET /users
- * @desc Retrieve all user names from the database.
- * @returns {Array} An array of user names.
- * @throws {Error} If there is an error in retrieving user names.
+ * @returns {Object[]} An array of user objects.
+ * @throws {Error} If there is an error in retrieving users.
  */
-
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const users = await req.db
       .select("id", "name", "email", "password")
       .from("users");
     res.json(users);
   } catch (error) {
-    throw error; 
+    handleErrors(error, req, res, next);
   }
 });
+
 
 /**
  * @route POST /users/register
@@ -59,7 +68,8 @@ router.post("/register", async (req, res) => {
 
     if (password.length < 5 || !/\d/.test(password)) {
       return res.status(400).json({
-        message: "Password must be at least 5 characters long and contain at least one numeric digit.",
+        message:
+          "Password must be at least 5 characters long and contain at least one numeric digit.",
       });
     }
 
@@ -74,7 +84,6 @@ router.post("/register", async (req, res) => {
       })
       .returning("*");
 
-
     res.status(201).json({
       message: "User created successfully",
       userId: user,
@@ -85,14 +94,14 @@ router.post("/register", async (req, res) => {
         error: "Email is already in use. Please choose a different email.",
       });
     } else {
-      throw error;
+      handleErrors(error, req, res, next);
     }
   }
 });
 
 /**
  * @route POST /users/login
- * @desc Authenticate a user and set a session cookie.
+ * @desc Authenticate a user.
  * @params {string} email - The email of the user.
  * @params {string} password - The password of the user.
  * @returns {Object} An object containing user details upon successful authentication.
@@ -117,16 +126,12 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid password." });
     }
 
-
     res.json({
       message: "Authentication successful.",
       user: user,
     });
-
- 
-
   } catch (error) {
-    throw error;
+    handleErrors(error, req, res, next);
   }
 });
 
@@ -162,7 +167,7 @@ router.get("/:id", async (req, res) => {
       email: userWithDetails.email,
     });
   } catch (error) {
-    throw error;
+    handleErrors(error, req, res, next);
   }
 });
 
@@ -182,7 +187,7 @@ router.put("/:id", async (req, res) => {
     const userId = req.params.id;
     const { email, password, confirmPassword } = req.body;
 
-    validateInputs({ email, password}, false );
+    validateInputs({ email, password }, false);
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required." });
@@ -226,7 +231,7 @@ router.put("/:id", async (req, res) => {
 
     res.json({ message: "User details updated successfully." });
   } catch (error) {
-    throw error;
+    handleErrors(error, req, res, next);
   }
 });
 
@@ -255,7 +260,7 @@ router.delete("/:id", async (req, res) => {
 
     res.json({ message: "User deleted successfully." });
   } catch (error) {
-    throw error;
+    handleErrors(error, req, res, next);
   }
 });
 
