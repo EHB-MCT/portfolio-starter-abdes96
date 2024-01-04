@@ -1,7 +1,9 @@
-version: '3.2'
+version: "3.2"
 services:
 
   api:
+    depends_on:
+      - store
     build: ./images/api
     container_name: api
     ports:
@@ -13,6 +15,14 @@ services:
 
   
   store:
+    environment:
+      POSTGRES_USER: 
+      POSTGRES_PASSWORD: 
+      POSTGRES_DB: 
+      PG_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+
+  store:
+    container_name: postgres
     image: postgres:latest
     ports:
       - 5432:5432
@@ -21,5 +31,7 @@ services:
       POSTGRES_PASSWORD: 
       POSTGRES_DB: 
       POSTGRES_HOSTY_AUTH_METHOD: "trust"
+      POSTGRES_DB: 
+      POSTGRES_PASSWORD: 
     volumes:
       - ./_backup:/var/lib/postgresql/data
