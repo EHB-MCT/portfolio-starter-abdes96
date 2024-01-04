@@ -57,18 +57,23 @@ router.post("/register", async (req, res) => {
 
     validateInputs({ name, email, password });
 
+    if (password.length < 5 || !/\d/.test(password)) {
+      return res.status(400).json({
+        message: "Password must be at least 5 characters long and contain at least one numeric digit.",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password.trim(), 10);
 
-    const [userId] = await req
+    const [user] = await req
       .db("users")
       .insert({
         name: name,
         email: email,
         password: hashedPassword,
       })
-      .returning("id");
+      .returning("*");
 
-    const [user] = await req.db("users").where("id", userId);
 
     res.status(201).json({
       message: "User created successfully",
