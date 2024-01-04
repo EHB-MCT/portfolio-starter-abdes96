@@ -25,3 +25,15 @@ services:
       POSTGRES_HOSTY_AUTH_METHOD: "trust"
     volumes:
       - ./_backup:/var/lib/postgresql/data
+      
+
+  frontend:
+    depends_on:
+      - api
+    build:
+      context: ./images/frontend
+    container_name: frontend
+    ports:
+      - 5173:5173
+    volumes:
+      - ./images/frontend/src:/usr/src/app/src

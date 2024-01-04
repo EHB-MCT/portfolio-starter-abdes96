@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Artwork from "../classes/Artwork";
 import "./styles/Home.css";
 
@@ -8,21 +8,22 @@ const Home = () => {
   useEffect(() => {
     const fetchArtworks = async () => {
       try {
-        const response = await fetch("http://localhost:3000/artworks/");
+        const response = await fetch("http://localhost/artworks/");
         if (!response.ok) {
           throw new Error("Failed to fetch artwork data");
         }
         const data = await response.json();
 
-        const artworkObjects = data.map((artwork, index) => {
-          return new Artwork({
+        // Use map to transform data into Artwork objects
+        const artworkObjects = data.map((artwork, index) => (
+          new Artwork({
             name: artwork.name,
             description: artwork.description,
             image: artwork.image,
             user_id: artwork.user_id,
             key: index.toString(),
-          });
-        });
+          })
+        ));
 
         setArtworks(artworkObjects);
       } catch (error) {
@@ -30,10 +31,9 @@ const Home = () => {
       }
     };
 
+    // Invoke the fetchArtworks function
     fetchArtworks();
   }, []); 
-
-
 
   return (
     <div className="container">

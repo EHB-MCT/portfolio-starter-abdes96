@@ -1,23 +1,36 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./styles/Login.css";
 import { useNavigate } from "react-router-dom";
 
-
+/**
+ * LoginForm Component:
+ * Renders a login form with email and password fields.
+ * Communicates with the server for authentication and redirects on success.
+ */
 function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  /**
+   * Handles the form submission.
+   * Sends a POST request to the server for authentication.
+   * If successful, stores user information in local storage and redirects.
+   * Displays an error message on authentication failure.
+   * @param {Event} event - The form submission event.
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
+    // Check if email and password are provided
     if (!email || !password) {
       setError("Please enter both email and password");
       return;
     }
-  
-    fetch("http://localhost:3000/users/login", {
+
+    // Send authentication request to the server
+    fetch("http://localhost/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,22 +43,23 @@ function LoginForm() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Response data:", JSON.stringify(data.user));
-  
+
+        // If authentication is successful, store user information and redirect
         if (data.message === "Authentication successful.") {
           localStorage.setItem("user_ID", JSON.stringify(data.user.id));
           localStorage.setItem("user_name", JSON.stringify(data.user.name));
 
-          navigate("/");
+          navigate(`/?id=${data.user.id}`);
           setError("");
         } else {
-          setError(data.message); 
+          // Display error message on authentication failure
+          setError(data.message);
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-  
 
   return (
     <form className="LoginForm" onSubmit={handleSubmit}>
