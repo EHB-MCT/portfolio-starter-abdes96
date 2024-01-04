@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin: auto;
+    max-width: 1000px;
+    padding: 0 20px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.artwork-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+    max-width: 1000px;
+    padding: 0 20px;
+    background-color: rgb(189, 103, 103);
+    border-radius: 10px;
+}
+
+button {
+   cursor: pointer;
+   margin: auto;
+   margin-top: 20px; 
+   margin-bottom: 20px;   
+   background-color: rgb(189, 103, 103);
+   border-radius: 5px;
+   padding: 10px 20px;
+   font-size: 1rem;
+}
+h1 {
+   font-size: 2rem;
+   font-weight: 700;
+   margin: auto;
+   text-align: center;
+   margin-top: 100px;
+}   

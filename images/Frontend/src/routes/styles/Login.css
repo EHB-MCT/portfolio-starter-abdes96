@@ -1,0 +1,37 @@
+.LoginForm {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin:  auto;
+    padding: 20px;
+    border: 5px solid #ddd;
+    border-radius: 5px;
+}
+
+.LoginForm label {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.LoginForm input[type="text"], .LoginForm input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.LoginForm input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.LoginForm input[type="submit"]:hover {
+    background-color: #45a049;
+}
