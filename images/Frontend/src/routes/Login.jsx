@@ -46,11 +46,13 @@ function LoginForm() {
 
         // If authentication is successful, store user information and redirect
         if (data.message === "Authentication successful.") {
+          setError("");
           localStorage.setItem("user_ID", JSON.stringify(data.user.id));
           localStorage.setItem("user_name", JSON.stringify(data.user.name));
 
           navigate(`/?id=${data.user.id}`);
-          setError("");
+          window.location.reload();
+          
         } else {
           // Display error message on authentication failure
           setError(data.message);

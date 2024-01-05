@@ -41,8 +41,8 @@ const Home = () => {
         <h1>Artworks</h1>
       </div>
       <div className="artwork-container">
-        {artworks.map((artwork) => (
-          <div key={artwork.key} className="artwork-card">
+        {artworks.map((artwork, index) => (
+          <div key={index} className="artwork-card">
             <img src={artwork.image} alt={artwork.name} />
             <h3>{artwork.name}</h3>
             <p>{artwork.description}</p>

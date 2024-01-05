@@ -17,7 +17,7 @@ function RegisterForm() {
       return;
     }
 
-    fetch("http://localhost:3000/users/register", {
+    fetch("http://localhost/users/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,14 +30,20 @@ function RegisterForm() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Response data:", JSON.stringify(data.user));
+        //  console.log("Response data:", JSON.stringify(data));
 
-        if (data.message === "Registration successful.") {
-          localStorage.setItem("user_ID", JSON.stringify(data.user.id));
-          localStorage.setItem("user_name", JSON.stringify(data.user.name));
-
-          navigate(`/?id=${data.user.id}`);
+        if (data.error) {
+          setError(data.error);
+        } else if (data.message === "User created successfully") {
           setError("");
+
+          localStorage.clear();
+          localStorage.setItem("user_ID", JSON.stringify(data.userId.id));
+          localStorage.setItem("user_name", JSON.stringify(data.userId.name));
+          localStorage.setItem("user_email", JSON.stringify(data.userId.email));
+
+           navigate(`/?id=${data.user.id}`);
+           window.location.reload();
         } else {
           setError(data.message);
         }
@@ -48,40 +54,41 @@ function RegisterForm() {
   };
 
   return (
-    <form className="RegisterForm" onSubmit={handleSubmit}>
-      {error && <div className="RegisterForm-error">{error}</div>}
-      <h1>Register</h1>
+    <div>
+      <form className="RegisterForm" onSubmit={handleSubmit}>
+        {error && <div className="RegisterForm-error">{error}</div>}
+        <h1>Register</h1>
 
-      <label className="RegisterForm-label">
-        
-        <p>Name:</p>
-        <input
-          type="text"
-          className="RegisterForm-input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <label className="RegisterForm-label">
-        <p>Email:</p>
-        <input
-          type="text"
-          className="RegisterForm-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
-      <label className="RegisterForm-label">
-        <p>Password:</p>
-        <input
-          type="password"
-          className="RegisterForm-input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
-      <input type="submit" className="RegisterForm-submit" value="Register" />
-    </form>
+        <label className="RegisterForm-label">
+          <p>Name:</p>
+          <input
+            type="text"
+            className="RegisterForm-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+        <label className="RegisterForm-label">
+          <p>Email:</p>
+          <input
+            type="text"
+            className="RegisterForm-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
+        <label className="RegisterForm-label">
+          <p>Password:</p>
+          <input
+            type="password"
+            className="RegisterForm-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <input type="submit" className="RegisterForm-submit" value="Register" />
+      </form>
+    </div>
   );
 }
 
