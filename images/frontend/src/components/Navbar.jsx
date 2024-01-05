@@ -1,14 +1,14 @@
 import "./styles/Navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Signout from "../assets/signout.gif";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const isAuthenticated = localStorage.getItem("user_ID");
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.clear();
-        useNavigate("/");
+        navigate("/");
     };
 
     return (

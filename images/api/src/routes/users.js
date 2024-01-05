@@ -49,7 +49,6 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-
 /**
  * @route POST /users/register
  * @desc Register a new user.
@@ -94,7 +93,7 @@ router.post("/register", async (req, res) => {
         error: "Email is already in use. Please choose a different email.",
       });
     } else {
-      handleErrors(error, req, res, next);
+      handleErrors(error, req, res);
     }
   }
 });
@@ -131,7 +130,7 @@ router.post("/login", async (req, res) => {
       user: user,
     });
   } catch (error) {
-    handleErrors(error, req, res, next);
+    handleErrors(error, req, res);
   }
 });
 
@@ -210,7 +209,6 @@ router.put("/:id", async (req, res) => {
           .status(400)
           .json({ error: "Email is already in use by another user." });
       }
-
       user.email = email;
     }
 
@@ -231,7 +229,7 @@ router.put("/:id", async (req, res) => {
 
     res.json({ message: "User details updated successfully." });
   } catch (error) {
-    handleErrors(error, req, res, next);
+    handleErrors(error, req, res);
   }
 });
 
@@ -260,7 +258,7 @@ router.delete("/:id", async (req, res) => {
 
     res.json({ message: "User deleted successfully." });
   } catch (error) {
-    handleErrors(error, req, res, next);
+    handleErrors(error, req, res);
   }
 });
 

@@ -30,7 +30,6 @@ function RegisterForm() {
     })
       .then((response) => response.json())
       .then((data) => {
-        //  console.log("Response data:", JSON.stringify(data));
 
         if (data.error) {
           setError(data.error);
@@ -39,11 +38,11 @@ function RegisterForm() {
 
           localStorage.clear();
           localStorage.setItem("user_ID", JSON.stringify(data.userId.id));
-          localStorage.setItem("user_name", JSON.stringify(data.userId.name));
-          localStorage.setItem("user_email", JSON.stringify(data.userId.email));
+          localStorage.setItem("user_name", (data.userId.name));
+          localStorage.setItem("user_email", data.userId.email);
 
-           navigate(`/?id=${data.user.id}`);
-           window.location.reload();
+          navigate(`/?id=${data.userId.id}`);
+          window.location.reload();
         } else {
           setError(data.message);
         }
@@ -71,7 +70,7 @@ function RegisterForm() {
         <label className="RegisterForm-label">
           <p>Email:</p>
           <input
-            type="text"
+            type="email"
             className="RegisterForm-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

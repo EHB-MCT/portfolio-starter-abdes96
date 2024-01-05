@@ -10,7 +10,7 @@ exports.up = function(knex) {
         table.string('description');
         table.string('image');
         table.integer('user_id').unsigned().notNullable();
-        table.foreign('user_id').references('id').inTable('users');
+        table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE'); 
     })
     
 };
@@ -21,5 +21,5 @@ exports.up = function(knex) {
  */
 
 exports.down = function(knex) {
-    return knex.schema.dropTableIfExists('artwortks');
+    return knex.schema.dropTableIfExists('artworks');
 };

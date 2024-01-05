@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./styles/Login.css";
 import { useNavigate } from "react-router-dom";
+import User from "../classes/User";
 
 /**
  * LoginForm Component:
@@ -16,7 +17,7 @@ function LoginForm() {
   /**
    * Handles the form submission.
    * Sends a POST request to the server for authentication.
-   * If successful, stores user information in local storage and redirects.
+   * If successful, instantiates a User class with user information and redirects.
    * Displays an error message on authentication failure.
    * @param {Event} event - The form submission event.
    */
@@ -42,17 +43,23 @@ function LoginForm() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Response data:", JSON.stringify(data.user));
+        //console.log("Response data:", JSON.stringify(data.user));
 
-        // If authentication is successful, store user information and redirect
+        // If authentication is successful, instantiate User class and store user information
         if (data.message === "Authentication successful.") {
           setError("");
-          localStorage.setItem("user_ID", JSON.stringify(data.user.id));
-          localStorage.setItem("user_name", JSON.stringify(data.user.name));
+
+          const id = JSON.stringify(data.user.id);
+          const username = data.user.name;
+          const email = data.user.email;
+
+          const loggedInUser = new User(id, username, email);
+
+          localStorage.setItem("user_ID", loggedInUser.id);
+          localStorage.setItem("user_name", loggedInUser.name);
+          localStorage.setItem("user_email", loggedInUser.email);
 
           navigate(`/?id=${data.user.id}`);
-          window.location.reload();
-          
         } else {
           // Display error message on authentication failure
           setError(data.message);
@@ -69,7 +76,7 @@ function LoginForm() {
       <label className="LoginForm-label">
         Email:
         <input
-          type="text"
+          type="email"
           className="LoginForm-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

@@ -12,13 +12,13 @@
 
 .LoginForm label {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     font-weight: bold;
     margin: 10px 0;
 }
 
-.LoginForm input[type="text"], .LoginForm input[type="password"] {
+.LoginForm input[type="email"], .LoginForm input[type="password"] {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
