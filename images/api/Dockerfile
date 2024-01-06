@@ -8,8 +8,10 @@ COPY package*.json .
 
 RUN npm install --quiet
 
+RUN npm install -g nodemon
+
 COPY  ./ ./
 
 
-CMD ["npm" , "start"]
+CMD ["npm" , "run" , "start"]
 
