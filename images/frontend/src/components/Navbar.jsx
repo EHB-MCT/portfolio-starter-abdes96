@@ -9,6 +9,7 @@ const Navbar = () => {
     const handleLogout = () => {
         localStorage.clear();
         navigate("/");
+        window.location.reload();
     };
 
     return (

@@ -128,39 +128,42 @@ router.get("/user/:userId", async (req, res) => {
  */
 
 router.put("/:id", async (req, res) => {
-    try {
-      const artworkId = req.params.id;
-      const { name, description, image, user_id } = req.body;
-  
-      validateArtworkInputs({ name, description, image, user_id });
-  
-      const existingArtwork = await req
-        .db("artworks")
-        .where("id", artworkId)
-        .first();
-  
-      if (!existingArtwork) {
-        return res.status(404).json({ error: "Artwork not found." });
-      }
-  
-      if (user_id !== existingArtwork.user_id) {
-        return res.status(403).json({ error: "Permission denied. You can only update artworks that belong to you." });
-      }
-  
-      existingArtwork.name = name;
-      existingArtwork.description = description;
-      existingArtwork.image = image;
-  
-      await req.db("artworks").where("id", artworkId).update(existingArtwork);
-  
-      res.json({ message: "Artwork updated successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+  try {
+    const artworkId = req.params.id;
+    const { name, description, image, user_id } = req.body;
+
+    validateArtworkInputs({ name, description, image, user_id });
+
+    const existingArtwork = await req
+      .db("artworks")
+      .where("id", artworkId)
+      .first();
+
+    if (!existingArtwork) {
+      return res.status(404).json({ error: "Artwork not found." });
     }
-  });
-  
-  
+
+    if (user_id !== existingArtwork.user_id) {
+      return res
+        .status(403)
+        .json({
+          error:
+            "Permission denied. You can only update artworks that belong to you.",
+        });
+    }
+
+    existingArtwork.name = name;
+    existingArtwork.description = description;
+    existingArtwork.image = image;
+
+    await req.db("artworks").where("id", artworkId).update(existingArtwork);
+
+    res.json({ message: "Artwork updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 /**
  * @route DELETE /artworks/:id
@@ -171,30 +174,32 @@ router.put("/:id", async (req, res) => {
  */
 
 router.delete("/:id", async (req, res) => {
-    try {
-      const artworkId = req.params.id;
-      const requestedUserId = req.body.user_id; 
-  
-      const existingArtwork = await req
-        .db("artworks")
-        .where("id", artworkId)
-        .first();
-  
-      if (!existingArtwork) {
-        return res.status(404).json({ error: "Artwork not found." });
-      }
-  
-      if (existingArtwork.user_id !== requestedUserId) {
-        return res.status(403).json({ error: "You do not have permission to delete this artwork." });
-      }
-  
-      await req.db("artworks").where("id", artworkId).del();
-  
-      res.json({ message: "Artwork deleted successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+  try {
+    const artworkId = req.params.id;
+    const requestedUserId = req.body.user_id;
+
+    const existingArtwork = await req
+      .db("artworks")
+      .where("id", artworkId)
+      .first();
+
+    if (!existingArtwork) {
+      return res.status(404).json({ error: "Artwork not found." });
     }
-  });
-  
+
+    if (existingArtwork.user_id !== requestedUserId) {
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to delete this artwork." });
+    }
+
+    await req.db("artworks").where("id", artworkId).del();
+
+    res.json({ message: "Artwork deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

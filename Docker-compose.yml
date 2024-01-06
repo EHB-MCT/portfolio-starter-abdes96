@@ -22,7 +22,7 @@ services:
       POSTGRES_USER: 
       POSTGRES_PASSWORD: 
       POSTGRES_DB: 
-      POSTGRES_HOSTY_AUTH_METHOD: "trust"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
     volumes:
       - ./_backup:/var/lib/postgresql/data
       

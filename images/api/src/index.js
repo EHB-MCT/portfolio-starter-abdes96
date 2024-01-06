@@ -4,7 +4,7 @@ const usersRouter = require("./routes/users.js");
 const artworksRouter = require("./routes/artworks.js");
 require("dotenv").config({ path: "./../.env" });
 
-const knexConfig = require("./knexfile");
+const knexConfig = require("../knexfile.js");
 const knex = require("knex")(knexConfig.development);
 
 const app = express();
