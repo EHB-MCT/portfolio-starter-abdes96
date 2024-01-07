@@ -11,6 +11,8 @@ const dbtest = require("knex")(knexConfig.development);
 
 describe("ArtworkHelper", () => {
 
+  
+
   describe("validateArtworkInputs", () => {
     test("should throw an error for missing inputs", () => {
       const invalidInputs = {
