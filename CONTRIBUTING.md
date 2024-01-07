@@ -42,7 +42,7 @@ Have an idea for a new feature? Open an issue on our [Issue Tracker](https://git
 
 ## License
 
-By contributing , you agree that your contributions will be licensed under the [project license].
+By contributing , you agree that your contributions will be licensed .
 
 Thank you for contributing!
 
