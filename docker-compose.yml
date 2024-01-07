@@ -3,8 +3,7 @@ services:
 
   api:
     depends_on:
-      store:
-        condition: service_healthy
+      - store
     build: ./images/api
     container_name: api
     ports:
@@ -25,11 +24,7 @@ services:
       POSTGRES_DB: 
     volumes:
       - ./_backup:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+
 
   frontend:
     build:
@@ -39,4 +34,10 @@ services:
       - 5173:5173
     volumes:
       - ./images/Frontend/src:/usr/src/app/src
+
+  watchtower:
+      image: containrrr/watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      command: --interval 30
 
