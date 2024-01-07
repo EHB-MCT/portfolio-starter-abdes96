@@ -1,0 +1,54 @@
+p {
+  width: 100px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  width:  80px;
+}
+
+.RegisterForm {
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: 400px;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 20px;
+  border: 5px solid #ddd;
+  border-radius: 5px;
+}
+.RegisterForm label {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-weight: bold;
+  margin: 10px 10px;
+  max-width: 500px;
+  min-width: 300px;
+}
+
+.RegisterForm input[type="text"],
+.RegisterForm input[type="email"],
+.RegisterForm input[type="password"] {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.RegisterForm input[type="submit"] {
+  background-color: rgb(189, 103, 103);
+  color: white;
+  padding: 10px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 50%;
+  margin: auto;
+}
+
+h1 {
+  margin: auto;
+  border-bottom: solid 3px rgb(189, 103, 103);
+}
