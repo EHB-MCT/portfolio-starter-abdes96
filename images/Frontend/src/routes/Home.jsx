@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Artwork from "../classes/Artwork";
 import { Link } from "react-router-dom";
 import "./styles/Home.css";
-import User from "../classes/User";
 
 const Home = () => {
   const [artworks, setArtworks] = useState([]);
@@ -11,6 +10,7 @@ const Home = () => {
   const [newArtworkName, setNewArtworkName] = useState("");
   const [newArtworkDescription, setNewArtworkDescription] = useState("");
   const [newArtworkImage, setNewArtworkImage] = useState("");
+
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -92,14 +92,15 @@ const Home = () => {
       })
       .catch((error) => {
         console.error("Error uploading artwork:", error);
-        // Handle error, display an error message, etc.
+
       });
 
     closeUploadModal();
   };
 
   return (
-    <div className="container">
+
+    <div className="container"> 
       <div className="head">
         <h1>Artworks</h1>
       </div>

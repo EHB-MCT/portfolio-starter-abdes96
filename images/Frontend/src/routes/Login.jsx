@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./styles/Login.css";
 import { useNavigate } from "react-router-dom";
-import User from "../classes/User";
+import User from "../classes/User.js";
+import ThreeCoolComponent from "../components/Three.jsx";
 
 /**
  * LoginForm Component:
@@ -14,13 +15,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  /**
-   * Handles the form submission.
-   * Sends a POST request to the server for authentication.
-   * If successful, instantiates a User class with user information and redirects.
-   * Displays an error message on authentication failure.
-   * @param {Event} event - The form submission event.
-   */
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -71,7 +66,11 @@ function LoginForm() {
   };
 
   return (
+
+    <div className="container">
+    <ThreeCoolComponent/>
     <form className="LoginForm" onSubmit={handleSubmit}>
+      <div> 
       {error && <div className="LoginForm-error">{error}</div>}
       <label className="LoginForm-label">
         Email:
@@ -92,7 +91,9 @@ function LoginForm() {
         />
       </label>
       <input type="submit" className="LoginForm-submit" value="Log in" />
+      </div>
     </form>
+    </div>
   );
 }
 

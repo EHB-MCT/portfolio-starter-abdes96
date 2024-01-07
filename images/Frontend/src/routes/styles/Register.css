@@ -1,6 +1,9 @@
 p {
   width: 100px;
-  text-align: left;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  width:  80px;
 }
 
 .RegisterForm {
@@ -22,6 +25,7 @@ p {
   font-weight: bold;
   margin: 10px 10px;
   max-width: 500px;
+  min-width: 300px;
 }
 
 .RegisterForm input[type="text"],

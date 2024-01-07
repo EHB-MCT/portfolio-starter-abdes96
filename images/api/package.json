@@ -7,7 +7,8 @@
     "express-session": "^1.17.3",
     "knex": "^3.1.0",
     "nodemon": "^3.0.2",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "three": "^0.160.0"
   },
   "name": "api",
   "version": "1.0.0",
@@ -15,7 +16,7 @@
   "scripts": {
     "test-watch": "jest --watchAll --detectOpenHandles",
     "test": "jest --detectOpenHandles",
-    "start": "knex migrate:latest && nodemon -L src/index.js"
+    "start": "knex migrate:latest && nodemon -L src/index.js "
   },
   "author": "",
   "license": "ISC",
