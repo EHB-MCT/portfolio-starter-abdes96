@@ -17,6 +17,9 @@
     "test-watch": "jest --watchAll --detectOpenHandles",
     "test": "jest --detectOpenHandles",
     "start": "knex migrate:latest && nodemon -L src/index.js "
+    "start": "knex migrate:latest && knex seed:run && nodemon src/index.js && npm run test",
+    "test": "jest --detectOpenHandles --forceExit",
+    "test-watch": "jest --detectOpenHandles --watchAll"
   },
   "author": "",
   "license": "ISC",
