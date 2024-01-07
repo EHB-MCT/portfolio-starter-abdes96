@@ -1,22 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Artwork = require("../classes/Artwork.js");
+const { validateArtworkInputs, validateArtworkUpdate, validateArtworkDeletion, userExists  } = require("../helpers/ArtworkHelper.js");
 
-const validateArtworkInputs = (inputs) => {
-  const { name, description, image, user_id } = inputs;
 
-  if (!name || !description || !image || !user_id) {
-    throw new Error("Name, description, image, and user ID are required.");
-  }
 
-  if (!Number.isInteger(user_id) || user_id <= 0) {
-    throw new Error("Invalid user ID. Must be a positive integer.");
-  }
-};
 
 /**
  * @route POST /artworks
- * @desc Create a new artwork.
+ * @description Create a new artwork.
  * @body {string} name - The name of the artwork.
  * @body {string} description - The description of the artwork.
  * @body {string} image - The image URL of the artwork.
@@ -29,6 +21,13 @@ router.post("/", async (req, res) => {
     const { name, description, image, user_id } = req.body;
 
     validateArtworkInputs({ name, description, image, user_id });
+    
+
+    const userExistsResult = await userExists(req.db, user_id);
+
+    if (!userExistsResult) {
+      return res.status(404).json({ error: "User not found." });
+    }
 
     const newArtwork = new Artwork({ name, description, image, user_id });
 
@@ -134,23 +133,11 @@ router.put("/:id", async (req, res) => {
 
     validateArtworkInputs({ name, description, image, user_id });
 
-    const existingArtwork = await req
-      .db("artworks")
-      .where("id", artworkId)
-      .first();
-
-    if (!existingArtwork) {
-      return res.status(404).json({ error: "Artwork not found." });
-    }
-
-    if (user_id !== existingArtwork.user_id) {
-      return res
-        .status(403)
-        .json({
-          error:
-            "Permission denied. You can only update artworks that belong to you.",
-        });
-    }
+    const existingArtwork = await validateArtworkUpdate(
+      artworkId,
+      user_id,
+      req.db
+    );
 
     existingArtwork.name = name;
     existingArtwork.description = description;
@@ -178,20 +165,7 @@ router.delete("/:id", async (req, res) => {
     const artworkId = req.params.id;
     const requestedUserId = req.body.user_id;
 
-    const existingArtwork = await req
-      .db("artworks")
-      .where("id", artworkId)
-      .first();
-
-    if (!existingArtwork) {
-      return res.status(404).json({ error: "Artwork not found." });
-    }
-
-    if (existingArtwork.user_id !== requestedUserId) {
-      return res
-        .status(403)
-        .json({ error: "You do not have permission to delete this artwork." });
-    }
+    await validateArtworkDeletion(artworkId, requestedUserId, req.db);
 
     await req.db("artworks").where("id", artworkId).del();
 
@@ -201,5 +175,4 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 module.exports = router;
