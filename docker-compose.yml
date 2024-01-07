@@ -3,7 +3,7 @@ services:
 
   api:
     depends_on:
-      "store":
+      store:
         condition: service_healthy
     build: ./images/api
     container_name: api
@@ -11,7 +11,6 @@ services:
       - 80:3000
     volumes:
       - ./images/api/src:/usr/app/src
-
     environment:
       PG_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
 
@@ -21,31 +20,24 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER:  "test"
-      POSTGRES_PASSWORD: "test"
-      POSTGRES_DB: "test"
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_database
       POSTGRES_HOST_AUTH_METHOD: "trust"
     volumes:
       - ./_backup:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB "]
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   frontend:
-
     build:
       context: ./images/frontend
     container_name: frontend
     ports:
       - 5173:5173
     volumes:
-      - ./images/frontend/src:/usr/src/app/src
+      - ./images/Frontend/src:/usr/src/app/src
 
-
-  watchtower:
-      image: containrrr/watchtower
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-      command: --interval 30
