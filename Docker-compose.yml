@@ -3,9 +3,8 @@ services:
 
   api:
     depends_on:
-      store:
-         condition: service_healthy
-
+      "store":
+        condition: service_healthy
     build: ./images/api
     container_name: api
     ports:
@@ -17,11 +16,6 @@ services:
       PG_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
 
   store:
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     container_name: postgres
     image: postgres:latest
     ports:
