@@ -20,10 +20,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_database
-      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_USER: 
+      POSTGRES_PASSWORD: 
+      POSTGRES_DB: 
     volumes:
       - ./_backup:/var/lib/postgresql/data
     healthcheck:
@@ -34,7 +33,7 @@ services:
 
   frontend:
     build:
-      context: ./images/frontend
+      context: ./images/Frontend
     container_name: frontend
     ports:
       - 5173:5173
