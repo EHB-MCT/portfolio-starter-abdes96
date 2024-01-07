@@ -46,7 +46,6 @@ const validateArtworkUpdate = async (artworkId, requestedUserId, db) => {
     );
   }
 
-  return existingArtwork;
 };
 
 /**
@@ -66,7 +65,8 @@ const validateArtworkDeletion = async (artworkId, requestedUserId, db) => {
   }
 
   if (existingArtwork.user_id !== requestedUserId) {
-    throw new Error("You do not have permission to delete this artwork.");
+
+    throw new Error("You do not have permission to delete this artwork. ");
   }
 };
 

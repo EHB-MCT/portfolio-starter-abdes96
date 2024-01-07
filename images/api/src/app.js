@@ -3,7 +3,6 @@ const cors = require("cors");
 const usersRouter = require("./routes/users.js");
 const artworksRouter = require("./routes/artworks.js");
 
-
 require("dotenv").config();
 
 const knexConfig = require("../knexfile.js");

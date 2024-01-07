@@ -4,11 +4,8 @@ import { useNavigate } from "react-router-dom";
 import User from "../classes/User.js";
 import ThreeCoolComponent from "../components/Three.jsx";
 
-/**
- * LoginForm Component:
- * Renders a login form with email and password fields.
- * Communicates with the server for authentication and redirects on success.
- */
+
+
 function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -19,13 +16,11 @@ function LoginForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Check if email and password are provided
     if (!email || !password) {
       setError("Please enter both email and password");
       return;
     }
 
-    // Send authentication request to the server
     fetch("http://localhost/users/login", {
       method: "POST",
       headers: {
@@ -38,9 +33,7 @@ function LoginForm() {
     })
       .then((response) => response.json())
       .then((data) => {
-        //console.log("Response data:", JSON.stringify(data.user));
 
-        // If authentication is successful, instantiate User class and store user information
         if (data.message === "Authentication successful.") {
           setError("");
 
@@ -56,7 +49,7 @@ function LoginForm() {
 
           navigate(`/?id=${data.user.id}`);
         } else {
-          // Display error message on authentication failure
+
           setError(data.message);
         }
       })

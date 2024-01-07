@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import Artwork from "../classes/Artwork";
 import { Link } from "react-router-dom";
+
 import "./styles/Home.css";
 
 const Home = () => {
@@ -10,7 +11,6 @@ const Home = () => {
   const [newArtworkName, setNewArtworkName] = useState("");
   const [newArtworkDescription, setNewArtworkDescription] = useState("");
   const [newArtworkImage, setNewArtworkImage] = useState("");
-
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -80,27 +80,28 @@ const Home = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.error) {
-          console.error("Error uploading artwork:", data.error);
-          return;
-        }
-        else if (data.message === "Artwork created successfully") {
+        console.log(data);
+        if (data.error == "User not found.") {
+          console.error("User not found.");
+          localStorage.clear();
           window.location.reload();
-
+        } else if (data.message === "Artwork created successfully") {
+          window.location.reload();
+        } else {
+          console.error("Error uploading artworks:", data.message);
         }
-        
       })
       .catch((error) => {
         console.error("Error uploading artwork:", error);
-
       });
 
     closeUploadModal();
   };
 
-  return (
+  
 
-    <div className="container"> 
+  return (
+    <div className="container">
       <div className="head">
         <h1>Artworks</h1>
       </div>

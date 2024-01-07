@@ -30,13 +30,13 @@ function RegisterForm() {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
 
         if (data.error) {
           setError(data.error);
         } else if (data.message === "User created successfully") {
           setError("");
 
-          localStorage.clear();
           localStorage.setItem("user_ID", JSON.stringify(data.userId.id));
           localStorage.setItem("user_name", (data.userId.name));
           localStorage.setItem("user_email", data.userId.email);

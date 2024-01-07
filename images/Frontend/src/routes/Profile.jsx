@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import User from "../classes/User";
 import Artwork from "../classes/Artwork";
 import "./styles/Profile.css";
+import EditButton from "../components/EditArtworks";
+import DeleteButton from "../components/DeleteArtworks";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -26,7 +28,6 @@ const ProfilePage = () => {
         setArtworks([]);
       } else {
         const artworks = data.map((artworkData) => new Artwork(artworkData));
-        console.log("Mapped Artworks:", artworks);
         setArtworks(artworks);
       }
     } catch (error) {
@@ -179,10 +180,12 @@ const ProfilePage = () => {
                   <>
                     <button onClick={() => setEditMode(true)}>Edit</button>
 
-                    <button onClick={() => { setConfirmDelete(!confirmDelete);}}>
-
+                    <button
+                      onClick={() => {
+                        setConfirmDelete(!confirmDelete);
+                      }}
+                    >
                       {confirmDelete ? "Cancel" : "Delete Profile"}
-                      
                     </button>
                     {confirmDelete && (
                       <button onClick={handleDeleteProfile}>
@@ -204,6 +207,8 @@ const ProfilePage = () => {
                           <img src={artwork.image} alt={artwork.name} />
                           <p>Name: {artwork.name}</p>
                           <p>Description: {artwork.description}</p>
+                          <EditButton artwork={artwork} />
+                          <DeleteButton artwork={artwork} />
                         </div>
                       ))}
                     </ul>
